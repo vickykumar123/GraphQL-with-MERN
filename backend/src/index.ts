@@ -5,6 +5,7 @@ import "dotenv/config";
 
 import {schema} from "./graphql/schema";
 import {resolver} from "./graphql/resolvers";
+import {authVerify} from "./middleware/authVerify";
 
 const app = express();
 app.use(express.json());
@@ -17,6 +18,8 @@ mongoose
     })
   )
   .catch((err) => console.log(err));
+
+app.use(authVerify);
 
 app.use(
   "/graphql",
