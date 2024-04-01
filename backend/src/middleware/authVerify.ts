@@ -15,13 +15,8 @@ export const authVerify = async (
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.get("Authorization");
-  if (!authHeader) {
-    req.isAuth = false;
-    return next();
-  }
+  const token = req.cookies.token;
 
-  const token = authHeader.split(" ")[1];
   if (!token) {
     req.isAuth = false;
     return next();
@@ -36,4 +31,5 @@ export const authVerify = async (
   req.isAuth = true;
   //   @ts-ignore
   req.userId = decodedToken.id!;
+  next();
 };
