@@ -15,13 +15,13 @@ export const bookingResolver = {
     console.log(allBooking);
     return allBooking;
   },
-  bookEvent: async (args: {eventId: string}, req: Request) => {
-    if (!req.isAuth) {
+  bookEvent: async (args: {eventId: string}, context: {req: Request}) => {
+    if (!context.req.isAuth) {
       throw new Error("Unauthorized");
     }
     const event = await Event.findOne({_id: args.eventId});
     const data = {
-      user: req.userId || "660a7cb0b832f73c47ede911",
+      user: context.req.userId,
       event,
     };
     const booking = await (

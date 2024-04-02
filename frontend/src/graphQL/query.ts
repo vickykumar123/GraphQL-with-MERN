@@ -43,7 +43,7 @@ export const createEvent = (
   date: Date | string
 ) => {
   const requestBody = {
-    query: `mutation CreateEvent($title: String!,$description:String!,$price:Number!, $date:String) {
+    query: `mutation CreateEvent($title: String!,$description:String!,$price:Float!, $date:String!) {
       createEvent(eventInput: {title: $title, description: $description, price:$price, date: $date}) {
         title
         description
@@ -69,6 +69,7 @@ export const getAllEvents = () => {
         _id
         title
         date
+        price
         creator {
           _id
           email

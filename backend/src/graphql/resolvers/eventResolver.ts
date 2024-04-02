@@ -13,8 +13,11 @@ export const eventResolver = {
     });
     return allEvent;
   },
-  createEvent: async (args: {eventInput: EventType}, req: Request) => {
-    if (!req.isAuth) {
+  createEvent: async (
+    args: {eventInput: EventType},
+    context: {req: Request}
+  ) => {
+    if (!context.req.isAuth) {
       throw new Error("Unauthorized");
     }
     const data = {
@@ -22,10 +25,10 @@ export const eventResolver = {
       description: args.eventInput.description,
       price: +args.eventInput.price,
       date: new Date(args.eventInput.date!),
-      creator: req.userId,
+      creator: context.req.userId,
     };
     const event = await (await Event.create(data)).populate("creator");
-    const user = await User.findById(req.userId);
+    const user = await User.findById(context.req.userId);
     user?.createdEvents?.push(event);
     user?.save();
     return event;

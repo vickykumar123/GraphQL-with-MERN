@@ -2,16 +2,17 @@ import {useRef, useState} from "react";
 import {login, signup} from "../graphQL/query";
 import "./Auth.css";
 import {useAppContext} from "../context/AppContext";
+import {useNavigate} from "react-router-dom";
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(false);
   const emailEl = useRef<HTMLInputElement>(null);
   const passwordEl = useRef<HTMLInputElement>(null);
   const context = useAppContext();
+  const navigate = useNavigate();
   function switchModeHandler() {
     setIsLogin((login) => !login);
   }
-
   async function submitHandler(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const email = emailEl.current?.value;
@@ -34,12 +35,12 @@ export default function Login() {
       });
 
       const responseData = await sendData.json();
-      console.log(responseData);
       context?.loggedUser(
         responseData.data.login.email,
         responseData.data.login.token,
         responseData.data.login.userId
       );
+      navigate("/events");
     } catch (err) {
       console.log(err);
     }

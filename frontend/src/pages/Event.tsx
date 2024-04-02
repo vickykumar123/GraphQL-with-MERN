@@ -29,6 +29,7 @@ export default function Event() {
   const priceElRef = useRef<HTMLInputElement>(null);
   const dateElRef = useRef<HTMLInputElement>(null);
   const descriptionElRef = useRef<HTMLTextAreaElement>(null);
+  console.log(events);
   const isActive = useRef(true);
   async function modalConfirmHandler() {
     setCreating(false);
@@ -36,7 +37,6 @@ export default function Event() {
     const price = +priceElRef.current!.value! as number;
     const date = dateElRef.current?.value as string;
     const description = descriptionElRef.current?.value as string;
-
     if (
       title?.trim().length === 0 ||
       price <= 0 ||
@@ -106,16 +106,15 @@ export default function Event() {
       }
       const responseData = await sendData.json();
       const events = responseData.data.events;
-      if (isActive.current) {
-        setEvents(events);
-        setIsLoading(false);
-      }
+
+      setEvents(events);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
     }
-  }, [isActive]);
+  }, []);
 
   useEffect(() => {
     fetchEvents();
@@ -198,7 +197,7 @@ export default function Event() {
           <h1>{selectedEvent.title}</h1>
           <h2>
             ${selectedEvent.price} -{" "}
-            {new Date(selectedEvent.date).toLocaleDateString()}
+            {new Date(+selectedEvent.date).toLocaleDateString()}
           </h2>
           <p>{selectedEvent.description}</p>
         </Modal>

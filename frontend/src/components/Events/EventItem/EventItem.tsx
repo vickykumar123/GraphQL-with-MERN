@@ -24,7 +24,7 @@ const EventItem: React.FC<Props> = ({
     <div>
       <h1>{title}</h1>
       <h2>
-        ${price} - {new Date(date).toLocaleDateString()}
+        ${price} - {new Date(+date).toLocaleDateString()}
       </h2>
     </div>
     <div>
