@@ -83,7 +83,7 @@ export const getAllEvents = () => {
 export const bookEvent = (eventId: string) => {
   const requestBody = {
     query: `
-    mutation BookingEvent($eventId:String!) {
+    mutation BookingEvent($eventId:ID!) {
       bookEvent(eventId: $eventId) {
         _id
         user {
@@ -97,6 +97,42 @@ export const bookEvent = (eventId: string) => {
     `,
     variables: {
       eventId,
+    },
+  };
+  return requestBody;
+};
+
+export const userBooking = () => {
+  const requestBody = {
+    query: `query Booking {
+      booking {
+        _id
+        createdAt
+        event {
+          _id
+          title
+          date
+          price
+        }
+      }
+    }
+    `,
+  };
+
+  return requestBody;
+};
+
+export const cancelUserBooking = (bookingId: string) => {
+  const requestBody = {
+    query: `mutation DeleteBooking($bookingId:ID!) {
+      cancelBooking(bookingId:$bookingId) {
+        _id
+        title
+      }
+    }
+    `,
+    variables: {
+      bookingId,
     },
   };
   return requestBody;

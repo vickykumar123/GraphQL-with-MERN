@@ -3,8 +3,11 @@ import Booking from "../../model/booking";
 import Event from "../../model/event";
 
 export const bookingResolver = {
-  booking: async () => {
-    const allBooking = await Booking.find().populate([
+  booking: async (args: any, context: {req: Request}) => {
+    if (!context.req.isAuth) {
+      throw new Error("Unauthorized");
+    }
+    const allBooking = await Booking.find({user: context.req.userId}).populate([
       {
         path: "event",
         populate: "creator",
@@ -12,7 +15,6 @@ export const bookingResolver = {
       },
       {path: "user", populate: "createdEvents", model: "User"},
     ]);
-    console.log(allBooking);
     return allBooking;
   },
   bookEvent: async (args: {eventId: string}, context: {req: Request}) => {
@@ -36,13 +38,12 @@ export const bookingResolver = {
     ]);
     return booking;
   },
-  cancelBooking: async (args: {bookingId: string}, req: Request) => {
-    if (!req.isAuth) {
+  cancelBooking: async (args: {bookingId: string}, context: {req: Request}) => {
+    if (!context.req.isAuth) {
       throw new Error("Unauthorized");
     }
     const booking = await Booking.findById(args.bookingId);
     await Booking.deleteOne({_id: args.bookingId});
-    console.log(booking);
     return booking?.event;
   },
 };

@@ -95,6 +95,7 @@ export default function Event() {
       const eventQuery = getAllEvents();
       const sendData = await fetch(`${API_URL}`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -137,6 +138,7 @@ export default function Event() {
     try {
       const sendData = await fetch(`${API_URL}`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
