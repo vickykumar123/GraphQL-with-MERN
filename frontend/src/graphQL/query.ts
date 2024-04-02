@@ -6,6 +6,7 @@ export const login = (email: string, password: string) => {
             userId
             token
             tokenExpiration
+            email
           }
         }
       `,
@@ -31,6 +32,49 @@ export const signup = (email: string, password: string) => {
       email: email,
       password: password,
     },
+  };
+  return requestBody;
+};
+
+export const createEvent = (
+  title: string,
+  description: string,
+  price: number,
+  date: Date | string
+) => {
+  const requestBody = {
+    query: `mutation CreateEvent {
+      createEvent(eventInput: {$title: "Cool", $description: "Cool Desc", price: $1000, $date: "2024-03-23T14:42:08.629Z"}) {
+        title
+        description
+        price
+        date
+      }
+    }
+    `,
+    variables: {
+      title,
+      description,
+      price,
+      date,
+    },
+  };
+  return requestBody;
+};
+
+export const getAllEvents = () => {
+  const requestBody = {
+    query: `query Events {
+      events {
+        _id
+        title
+        date
+        creator {
+          _id
+          email
+        }
+      }
+    }`,
   };
   return requestBody;
 };

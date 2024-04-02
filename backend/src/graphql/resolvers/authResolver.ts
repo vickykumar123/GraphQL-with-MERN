@@ -49,6 +49,6 @@ export const authResolver = {
       httpOnly: true,
       maxAge: 10 * 86400000, //10 day in ms
     });
-    return {userId: user._id, token, tokenExpiration: 1};
+    return {userId: user._id, token, tokenExpiration: 1, email: user.email};
   },
 };

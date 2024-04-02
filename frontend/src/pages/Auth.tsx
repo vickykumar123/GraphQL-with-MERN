@@ -1,12 +1,13 @@
 import {useRef, useState} from "react";
 import {login, signup} from "../graphQL/query";
 import "./Auth.css";
+import {useAppContext} from "../context/AppContext";
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(false);
   const emailEl = useRef<HTMLInputElement>(null);
   const passwordEl = useRef<HTMLInputElement>(null);
-
+  const context = useAppContext();
   function switchModeHandler() {
     setIsLogin((login) => !login);
   }
@@ -34,6 +35,11 @@ export default function Login() {
 
       const responseData = await sendData.json();
       console.log(responseData);
+      context?.loggedUser(
+        responseData.data.login.email,
+        responseData.data.login.token,
+        responseData.data.login.userId
+      );
     } catch (err) {
       console.log(err);
     }

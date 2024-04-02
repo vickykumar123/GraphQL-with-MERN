@@ -24,11 +24,10 @@ export const eventResolver = {
       date: new Date(args.eventInput.date!),
       creator: req.userId,
     };
-    const event = await Event.create(data);
+    const event = await (await Event.create(data)).populate("creator");
     const user = await User.findById(req.userId);
     user?.createdEvents?.push(event);
     user?.save();
-    console.log(event);
     return event;
   },
   getEventById: async (_id: string) => {
