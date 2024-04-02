@@ -43,8 +43,8 @@ export const createEvent = (
   date: Date | string
 ) => {
   const requestBody = {
-    query: `mutation CreateEvent {
-      createEvent(eventInput: {$title: "Cool", $description: "Cool Desc", price: $1000, $date: "2024-03-23T14:42:08.629Z"}) {
+    query: `mutation CreateEvent($title: String!,$description:String!,$price:Number!, $date:String) {
+      createEvent(eventInput: {title: $title, description: $description, price:$price, date: $date}) {
         title
         description
         price
@@ -75,6 +75,28 @@ export const getAllEvents = () => {
         }
       }
     }`,
+  };
+  return requestBody;
+};
+
+export const bookEvent = (eventId: string) => {
+  const requestBody = {
+    query: `
+    mutation BookingEvent($eventId:String!) {
+      bookEvent(eventId: $eventId) {
+        _id
+        user {
+          email
+        }
+        event {
+          title
+        }
+      }
+    }
+    `,
+    variables: {
+      eventId,
+    },
   };
   return requestBody;
 };

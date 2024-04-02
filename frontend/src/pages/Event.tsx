@@ -1,10 +1,14 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {useAppContext} from "../context/AppContext";
 import Modal from "../components/Modal/Modal";
-import {createEvent, getAllEvents} from "../graphQL/query";
+import {bookEvent, createEvent, getAllEvents} from "../graphQL/query";
 import {API_URL} from "../apiUrl";
+import "./Event.css";
+import Backdrop from "../components/Backdrop/Backdrop";
+import Spinner from "../components/Spinner/Spinner";
+import EventList from "../components/Events/EventList";
 
-type Events = {
+export interface Events {
   _id: string;
   title: string;
   description: string;
@@ -13,7 +17,7 @@ type Events = {
   creator?: {
     _id: string;
   };
-};
+}
 
 export default function Event() {
   const [creating, setCreating] = useState(false);
@@ -25,8 +29,7 @@ export default function Event() {
   const priceElRef = useRef<HTMLInputElement>(null);
   const dateElRef = useRef<HTMLInputElement>(null);
   const descriptionElRef = useRef<HTMLTextAreaElement>(null);
-  const isActive = true;
-
+  const isActive = useRef(true);
   async function modalConfirmHandler() {
     setCreating(false);
     const title = titleElRef.current?.value as string;
@@ -103,7 +106,7 @@ export default function Event() {
       }
       const responseData = await sendData.json();
       const events = responseData.data.events;
-      if (isActive) {
+      if (isActive.current) {
         setEvents(events);
         setIsLoading(false);
       }
@@ -116,12 +119,40 @@ export default function Event() {
 
   useEffect(() => {
     fetchEvents();
+    return () => {
+      isActive.current = false;
+    };
   }, [fetchEvents]);
 
   const showDetailHandler = (eventId: string) => {
     const selectedEvent = events.find((e) => e._id === eventId);
     setSelectedEvent(selectedEvent!);
   };
+
+  async function bookEventHandler() {
+    if (!context?.token) {
+      setSelectedEvent(null);
+      return;
+    }
+    const bookEventQuery = bookEvent(selectedEvent?._id as string);
+    try {
+      const sendData = await fetch(`${API_URL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookEventQuery),
+      });
+      if (sendData.status !== 200 && sendData.status !== 201) {
+        throw new Error("Failed!");
+      }
+      const responseData = await sendData.json();
+      console.log(responseData);
+      setSelectedEvent(null);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <>
@@ -185,7 +216,7 @@ export default function Event() {
       ) : (
         <EventList
           events={events}
-          authUserId={context?.userId}
+          authUserId={context?.userId as string}
           onViewDetail={showDetailHandler}
         />
       )}
