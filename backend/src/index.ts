@@ -1,5 +1,7 @@
 import express from "express";
-import {graphqlHTTP} from "express-graphql";
+// import {graphqlHTTP} from "express-graphql";
+import {createHandler} from "graphql-http/lib/use/express";
+import expressPlayground from "graphql-playground-middleware-express";
 import mongoose from "mongoose";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -25,12 +27,12 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use(authVerify);
+app.get("/playground", expressPlayground({endpoint: "/graphql"}));
 
-app.use("/graphql", (req, res) =>
-  graphqlHTTP({
+app.use("/graphql", (req, res, next) =>
+  createHandler({
     schema: schema,
     rootValue: resolver,
-    graphiql: true,
     context: {req, res},
-  })(req, res)
+  })(req, res, next)
 );
